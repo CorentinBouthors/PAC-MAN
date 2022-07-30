@@ -37,12 +37,28 @@
             [X, _, _, _, _, _, _, _, _, X, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, X],
             [X, _, _, _, _, _, _, _, _, X, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, X],
         ]
-        let pacmanX = 20
-        let pacmanY = 5
+        let pacmanX = 200
+        let pacmanY = 50
+
+        let mouthOpening = 0
+        let isOpening = true
+
+        let goRight = true
 
         function tick() {
+            if (mouthOpening > 0.25 || mouthOpening < 0) isOpening = !isOpening
+            if (isOpening) { mouthOpening += 0.01 } else { mouthOpening -= 0.01 }
+
+            if (goRight) { pacmanX += 2 } else { pacmanX -= 2 }
+            if (pacmanX < 0 || pacmanX > canvas.width) goRight = !goRight
+
+            erase()
             drawBoard()
-            drawPacman()
+            drawPacman(pacmanX, pacmanY, 0, 30, mouthOpening)
+        }
+
+        function erase() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height)
         }
 
         function drawBoard() {
@@ -61,16 +77,18 @@
             }
         }
 
-        function drawPacman() {
+        function drawPacman(x, y, direction, size, mouthOpening) {
             ctx.beginPath();
-            ctx.arc(100, 100, 50, 0.25 * Math.PI, 1.25 * Math.PI, false);
+            ctx.arc(x, y, size, mouthOpening * Math.PI, (1 + mouthOpening) * Math.PI, false);
             ctx.fillStyle = "rgb(255, 255, 0)";
             ctx.fill();
+
             ctx.beginPath();
-            ctx.arc(100, 100, 50, 0.75 * Math.PI, 1.75 * Math.PI, false);
+            ctx.arc(x, y, size, (1 - mouthOpening) * Math.PI, (2 - mouthOpening) * Math.PI, false);
             ctx.fill();
+
             ctx.beginPath();
-            ctx.arc(100, 75, 10, 0, 2 * Math.PI, false);
+            ctx.arc(x, y - size / 2, size / 5, 0, 2 * Math.PI, false);
             ctx.fillStyle = "rgb(0, 0, 0)";
             ctx.fill();
         }
